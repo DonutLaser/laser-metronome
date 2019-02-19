@@ -13,6 +13,10 @@ struct metronome_input {
 	bool space_down;
 };
 
+struct metronome_app {
+	bool playing;
+};
+
 void metronome_init (void* memory, gui_window window);
 void metronome_update (void* memory, metronome_input input);
 
