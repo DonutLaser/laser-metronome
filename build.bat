@@ -1,0 +1,1 @@
+msbuild vs\Metronome\Metronome.sln /nologo /v:m /p:OutDir=..\..\..\build\
