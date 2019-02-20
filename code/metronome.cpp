@@ -47,7 +47,7 @@ static void draw_bpm (metronome_app* app, metronome_input input, gui_window wind
 
 	rect whole_rect = make_rect (ACTIVE_BPM_RECT);
 	if (is_point_in_rect (whole_rect, input.mouse_pos)) {
-		if (!app -> changing_tempo && input.lmb_down) {
+		if (input.lmb_down) {
 			app -> changing_tempo = true;
 			app -> drag_origin = input.mouse_pos;
 			wnd_capture_cursor (window);
@@ -98,7 +98,7 @@ static bool draw_button (metronome_app* app, metronome_input input) {
 		color = make_color (BUTTON_HOVER_COLOR);
 
 		result = input.lmb_up && !app -> changing_tempo;
-		if (input.lmb_down)
+		if (input.lmb_pressed)
 			image_rect.y += 2;
 	}
 	else

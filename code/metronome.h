@@ -21,6 +21,7 @@ struct digit {
 struct metronome_input {
 	v2 mouse_pos;
 	bool lmb_down;
+	bool lmb_pressed;
 	bool lmb_up;
 
 	bool space_down;
