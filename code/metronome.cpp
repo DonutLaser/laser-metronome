@@ -7,7 +7,18 @@
 #include "../third_party/gui_window.h"
 #include "../third_party/gui_io.h"
 
-enum image { I_START, I_STOP };
+enum image { I_START, I_STOP, I_BPM };
+
+static void draw_bpm (metronome_app* app) {
+	rect bpm_rect = make_rect (BPM_TEXT_POSITION, 0, 0);
+	gl_draw_image (bpm_rect, make_color (255, 255, 255, 255), app -> images[I_BPM]);
+}
+
+static void draw_meter (metronome_app* app) {
+	rect divider_rect = make_rect (METER_DIVIDER);
+	v4 color = make_color (ACCENT_COLOR);
+	gl_draw_rect (divider_rect, color);
+}
 
 static bool draw_button (metronome_app* app, metronome_input input) {
 	bool result = false;
@@ -30,6 +41,7 @@ static bool draw_button (metronome_app* app, metronome_input input) {
 
 	gl_draw_image (image_rect, make_color (255, 255, 255, 255), 
 				   app -> playing ? app -> images[I_STOP] : app -> images[I_START]);
+
 	return result;
 }
 
@@ -64,6 +76,10 @@ void metronome_init (void* memory, gui_window window) {
 
 void metronome_update (void* memory, metronome_input input) {
 	metronome_app* app = (metronome_app*)memory;
+
+	draw_meter (app);
+	draw_bpm (app);
+
 	if (draw_button (app, input))
 		app -> playing = !app -> playing;
 

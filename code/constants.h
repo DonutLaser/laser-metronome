@@ -24,12 +24,14 @@
 #define BPM_DIGIT_1_POSITION	87, 30
 #define METER_COUNT_POSITION	30, 13
 #define METER_LENGTH_POSITION 	30, 60
-#define METER_DIVIDER_POSITION 	30, 53
 
-#define IMAGE_COUNT				2
+#define METER_DIVIDER 			30, 53, 27, 2
+
+#define IMAGE_COUNT				3
 static const char* images[IMAGE_COUNT] = { 
 	"W:\\metronome\\data\\images\\button_start.png",
-	"W:\\metronome\\data\\images\\button_stop.png"
+	"W:\\metronome\\data\\images\\button_stop.png",
+	"W:\\metronome\\data\\images\\bpm.png"
 };
 
 #endif
