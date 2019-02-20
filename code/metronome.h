@@ -30,11 +30,13 @@ struct metronome_app {
 	digit bpm_digits[BPM_DIGIT_COUNT];
 	gui_image images[IMAGE_COUNT];
 
+	v2 drag_origin;
 	unsigned tempo;
 	bool playing;
+	bool changing_tempo;
 };
 
 void metronome_init (void* memory, gui_window window);
-void metronome_update (void* memory, metronome_input input);
+void metronome_update (void* memory, metronome_input input, gui_window window);
 
 #endif

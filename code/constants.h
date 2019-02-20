@@ -26,6 +26,7 @@
 #define METER_LENGTH_POSITION 	30, 60
 
 #define METER_DIVIDER 			30, 53, 27, 2
+#define ACTIVE_BPM_RECT 		87, 30, 89, 47
 
 #define DIGIT_SEGMENT_COUNT		7
 #define BPM_DIGIT_COUNT			3
@@ -46,5 +47,10 @@ static const char* images[IMAGE_COUNT] = {
 	"W:\\metronome\\data\\images\\segment_horizontal.png",
 	"W:\\metronome\\data\\images\\segment_vertical.png"
 };
+
+#define MIN_TEMPO				30
+#define MAX_TEMPO				300
+
+#define TEMPO_CHANGE_STEP		3	
 
 #endif

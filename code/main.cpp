@@ -27,7 +27,7 @@ GUI_MAIN {
 		input.lmb_up = input_is_mb_up (window, M_LEFT);
 		input.space_down = input_is_key_down (window, K_SPACE);
 
-		metronome_update (memory, input);
+		metronome_update (memory, input, window);
 		wnd_swap_buffers (window);
 	}
 
