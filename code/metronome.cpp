@@ -7,9 +7,26 @@
 #include "../third_party/gui_window.h"
 #include "../third_party/gui_io.h"
 
-enum image { I_START, I_STOP, I_BPM };
+enum image { I_START, I_STOP, I_BPM, I_SEGMENT_HOR, I_SEGMENT_VER };
 
 static void draw_bpm (metronome_app* app) {
+	v2 positions[] = { 
+		make_v2 (BPM_DIGIT_1_POSITION),
+		make_v2 (BPM_DIGIT_2_POSITION),
+		make_v2 (BPM_DIGIT_3_POSITION)
+	};
+
+	v4 white_color = make_color (255, 255, 255, 255);
+	for (unsigned i = 0; i < BPM_DIGIT_COUNT; ++i) {
+		for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
+			digit_segment segment = app -> bpm_digits[i].segments[j];
+			if (segment.on) {
+				rect r = make_rect (positions[i] + segment.position, 0.0f, 0.0f);
+				gl_draw_image (r, white_color, segment.image);
+			}
+		}
+	}
+
 	rect bpm_rect = make_rect (BPM_TEXT_POSITION, 0, 0);
 	gl_draw_image (bpm_rect, make_color (255, 255, 255, 255), app -> images[I_BPM]);
 }
@@ -67,6 +84,26 @@ void metronome_init (void* memory, gui_window window) {
 			io_log_error ("Image at %s could not be loaded", images[i]);
 
 		gl_load_image (&app -> images[i]);
+	}
+
+	bool images[] = { true, false, false, true, false, false, true }; // True - horizontal, false - vertical
+	v2 positions[] = { 
+		make_v2 (SEGMENT_A),
+		make_v2 (SEGMENT_B),
+		make_v2 (SEGMENT_C),
+		make_v2 (SEGMENT_D),
+		make_v2 (SEGMENT_E),
+		make_v2 (SEGMENT_F),
+		make_v2 (SEGMENT_G)
+	};
+
+	for (unsigned i = 0; i < BPM_DIGIT_COUNT; ++i) {
+		for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
+			digit_segment* segment = &app -> bpm_digits[i].segments[j];
+			segment -> image = images[j] ? app -> images[I_SEGMENT_HOR] : app -> images[I_SEGMENT_VER];
+			segment -> position = positions[j];
+			segment -> on = true;	
+		}
 	}
 
 	app -> playing = false;

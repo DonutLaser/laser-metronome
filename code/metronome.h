@@ -8,6 +8,16 @@
 
 struct gui_window;
 
+struct digit_segment {
+	gui_image image;
+	v2 position;
+	bool on;
+};
+
+struct digit {
+	digit_segment segments[DIGIT_SEGMENT_COUNT];
+};
+
 struct metronome_input {
 	v2 mouse_pos;
 	bool lmb_down;
@@ -17,7 +27,10 @@ struct metronome_input {
 };
 
 struct metronome_app {
+	digit bpm_digits[BPM_DIGIT_COUNT];
 	gui_image images[IMAGE_COUNT];
+
+	unsigned tempo;
 	bool playing;
 };
 

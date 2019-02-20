@@ -27,11 +27,24 @@
 
 #define METER_DIVIDER 			30, 53, 27, 2
 
-#define IMAGE_COUNT				3
+#define DIGIT_SEGMENT_COUNT		7
+#define BPM_DIGIT_COUNT			3
+
+#define SEGMENT_A 				4, 0
+#define SEGMENT_B				19, 4
+#define SEGMENT_C 				19, 24
+#define SEGMENT_D				4, 40
+#define SEGMENT_E 				0, 24
+#define SEGMENT_F 				0, 4
+#define SEGMENT_G 				4, 20
+
+#define IMAGE_COUNT				5
 static const char* images[IMAGE_COUNT] = { 
 	"W:\\metronome\\data\\images\\button_start.png",
 	"W:\\metronome\\data\\images\\button_stop.png",
-	"W:\\metronome\\data\\images\\bpm.png"
+	"W:\\metronome\\data\\images\\bpm.png",
+	"W:\\metronome\\data\\images\\segment_horizontal.png",
+	"W:\\metronome\\data\\images\\segment_vertical.png"
 };
 
 #endif
