@@ -26,4 +26,10 @@
 #define METER_LENGTH_POSITION 	30, 60
 #define METER_DIVIDER_POSITION 	30, 53
 
+#define IMAGE_COUNT				2
+static const char* images[IMAGE_COUNT] = { 
+	"W:\\metronome\\data\\images\\button_start.png",
+	"W:\\metronome\\data\\images\\button_stop.png"
+};
+
 #endif

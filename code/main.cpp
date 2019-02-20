@@ -23,7 +23,7 @@ GUI_MAIN {
 	metronome_input input = { };
 	while (wnd_update (&window)) {
 		input.mouse_pos = input_get_mouse_position (window);
-		input.lmb_down = input_is_mb_down (window, M_LEFT);
+		input.lmb_down = input_is_mb_pressed (window, M_LEFT);
 		input.lmb_up = input_is_mb_up (window, M_LEFT);
 		input.space_down = input_is_key_down (window, K_SPACE);
 

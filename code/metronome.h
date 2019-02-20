@@ -1,7 +1,10 @@
 #if !defined (METRONOME_H)
 #define METRONOME_H
 
+#include "constants.h"
+
 #include "../third_party/gui_math.h"
+#include "../third_party/gui_resources.h"
 
 struct gui_window;
 
@@ -14,6 +17,7 @@ struct metronome_input {
 };
 
 struct metronome_app {
+	gui_image images[IMAGE_COUNT];
 	bool playing;
 };
 
