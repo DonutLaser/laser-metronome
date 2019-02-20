@@ -384,6 +384,14 @@ void wnd_set_icon (gui_window window, const char* path_to_icon) {
 	SendMessage (window.handle, WM_SETICON, ICON_BIG, (LPARAM)icon_id);
 }
 
+void wnd_capture_cursor (gui_window window) {
+	SetCapture (window.handle);
+}
+
+void wnd_uncapture_cursor () {
+	ReleaseCapture ();
+}
+
 bool input_is_key_down (gui_window window, unsigned code) {
 	// Returns true the moment the key is pressed
 	bool result = window.input.key == code;

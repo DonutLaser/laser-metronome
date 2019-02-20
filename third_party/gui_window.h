@@ -162,6 +162,8 @@ v2 wnd_get_client_size (gui_window window);
 cursor_id wnd_generate_new_cursor (const char* path_to_cursor);
 void wnd_set_cursor (gui_window* window, cursor_id id);
 void wnd_set_icon (gui_window window, const char* path_to_icon);
+void wnd_capture_cursor (gui_window window);
+void wnd_uncapture_cursor ();
 
 bool input_is_key_down (gui_window window, unsigned code);
 bool input_is_key_pressed (gui_window window, unsigned code);
