@@ -52,6 +52,7 @@ static void draw_bpm (metronome_app* app, metronome_input input, gui_window wind
 		app -> tempo += tempo_change;
 
 		app -> tempo = CLAMP (app -> tempo, MIN_TEMPO, MAX_TEMPO);
+		app -> play_timer.target_miliseconds = 60000 / app -> tempo;
 
 		if (tempo_change != 0)
 			app -> drag_origin = input.mouse_pos;
