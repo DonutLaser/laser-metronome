@@ -6,6 +6,7 @@
 
 #include "../third_party/gui_math.h"
 #include "../third_party/gui_resources.h"
+#include "../third_party/gui_time.h"
 
 struct gui_window;
 
@@ -31,12 +32,17 @@ struct metronome_input {
 struct metronome_app {
 	digit bpm_digits[BPM_DIGIT_COUNT];
 	gui_image images[IMAGE_COUNT];
+	sound sounds[SOUND_COUNT];
 	sound main_sound;
 
 	v2 drag_origin;
+
 	unsigned tempo;
 	bool playing;
 	bool changing_tempo;
+
+	unsigned click_count;
+	timer play_timer;
 };
 
 void metronome_init (void* memory, gui_window window);

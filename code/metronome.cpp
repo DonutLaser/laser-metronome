@@ -8,6 +8,18 @@
 #include "../third_party/gui_io.h"
 
 enum image { I_START, I_STOP, I_BPM, I_SEGMENT_HOR, I_SEGMENT_VER };
+enum sound_type { S_SECONDARY, S_MAIN };
+
+static void play (metronome_app* app) {
+	if (timer_get_value (app -> play_timer) >= app -> play_timer.target_miliseconds) {
+		audio_play (&app -> sounds[app -> click_count == 0 ? S_MAIN : S_SECONDARY]);
+		timer_reset (&app -> play_timer);
+
+		++app -> click_count;
+		if (app -> click_count == 4)
+			app -> click_count = 0;
+	}
+}
 
 static int digit_to_code (unsigned digit) {
 	switch (digit) {
@@ -159,11 +171,16 @@ void metronome_init (void* memory, gui_window window) {
 	app -> changing_tempo = false;
 	app -> tempo = 120;
 
+	// For now assume the meter is 4/4
+	app -> click_count = 0;
+	app -> play_timer.target_miliseconds = 60000 / app -> tempo;
+
 	gl_init (window);
 
 	audio_init ();
 
-	app -> main_sound = audio_load ("W:\\metronome\\data\\audio\\ping.wav");
+	for (unsigned i = 0; i < SOUND_COUNT; ++i)
+		app -> sounds[i] = audio_load (sounds[i]);
 }
 
 void metronome_update (void* memory, metronome_input input, gui_window window) {
@@ -178,12 +195,17 @@ void metronome_update (void* memory, metronome_input input, gui_window window) {
 	draw_bpm (app, input, window);
 
 	if (draw_button (app, input)) {
-		audio_play (&app -> main_sound);
 		app -> playing = !app -> playing;
+		if (!app -> playing) {
+			app -> click_count = 0; 
+			timer_reset (&app -> play_timer);
+		}
 	}
 
-	if (app -> playing)
+	if (app -> playing) {
 		draw_app_border ();
+		play (app);
+	}
 }
 
 void metronome_deinit () {
