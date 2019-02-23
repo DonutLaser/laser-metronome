@@ -53,8 +53,8 @@ static const char* images[IMAGE_COUNT] = {
 
 #define SOUND_COUNT				2
 static const char* sounds[SOUND_COUNT] = {
-	"W:\\metronome\\data\\audio\\ping.wav",
-	"W:\\metronome\\data\\audio\\ping2.wav"
+	"W:\\metronome\\data\\audio\\main.wav",
+	"W:\\metronome\\data\\audio\\secondary.wav"
 };
 
 #define TEMPO_CHANGE_STEP		5	

@@ -41,7 +41,7 @@ static int digit_to_code (unsigned digit) {
 
 static void update_digit_segments (int code, digit* result) {
 	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
-		result -> segments[i].on = code & 0b00000001;
+		result -> segments[i].on = code & 1;
 		code >>= 1;
 	}
 }
