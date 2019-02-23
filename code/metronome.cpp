@@ -160,6 +160,10 @@ void metronome_init (void* memory, gui_window window) {
 	app -> tempo = 120;
 
 	gl_init (window);
+
+	audio_init ();
+
+	app -> main_sound = audio_load ("W:\\metronome\\data\\audio\\ping.wav");
 }
 
 void metronome_update (void* memory, metronome_input input, gui_window window) {
@@ -173,9 +177,15 @@ void metronome_update (void* memory, metronome_input input, gui_window window) {
 	draw_meter (app);
 	draw_bpm (app, input, window);
 
-	if (draw_button (app, input))
+	if (draw_button (app, input)) {
+		audio_play (&app -> main_sound);
 		app -> playing = !app -> playing;
+	}
 
 	if (app -> playing)
 		draw_app_border ();
+}
+
+void metronome_deinit () {
+	audio_deinit ();
 }

@@ -2,6 +2,7 @@
 #define METRONOME_H
 
 #include "constants.h"
+#include "metronome_audio.h"
 
 #include "../third_party/gui_math.h"
 #include "../third_party/gui_resources.h"
@@ -30,6 +31,7 @@ struct metronome_input {
 struct metronome_app {
 	digit bpm_digits[BPM_DIGIT_COUNT];
 	gui_image images[IMAGE_COUNT];
+	sound main_sound;
 
 	v2 drag_origin;
 	unsigned tempo;
@@ -39,5 +41,6 @@ struct metronome_app {
 
 void metronome_init (void* memory, gui_window window);
 void metronome_update (void* memory, metronome_input input, gui_window window);
+void metronome_deinit ();
 
 #endif

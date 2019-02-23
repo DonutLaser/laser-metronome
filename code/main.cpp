@@ -32,6 +32,7 @@ GUI_MAIN {
 		wnd_swap_buffers (window);
 	}
 
+	metronome_deinit ();
 	free (memory);
 
 	wnd_close ();
