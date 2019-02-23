@@ -114,14 +114,12 @@ static bool draw_button (metronome_app* app, metronome_input input) {
 		if (input.lmb_pressed)
 			image_rect.y += 2;
 	}
-	else
-		result = input.space_down;
 
 	gl_draw_rect (r, color);
 	gl_draw_image (image_rect, make_color (255, 255, 255, 255), 
 				   app -> playing ? app -> images[I_STOP] : app -> images[I_START]);
 
-	return result;
+	return result || input.space_down;
 }
 
 static void draw_app_border () {
