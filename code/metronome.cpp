@@ -283,6 +283,11 @@ void metronome_update (void* memory, metronome_input input, gui_window window) {
 	update_meter_count (app, input, window);
 	draw_meter_count (app);
 
+	// Here for now
+	rect divider_rect = make_rect (METER_DIVIDER);
+	v4 color = make_color (ACCENT_COLOR);
+	gl_draw_rect (divider_rect, color);
+
 	update_meter_length (app, input, window);
 	draw_meter_length (app);
 
