@@ -56,13 +56,13 @@
 
 #define IMAGE_COUNT				7	
 static const char* images[IMAGE_COUNT] = { 
-	"W:\\metronome\\data\\images\\button_start.png",
-	"W:\\metronome\\data\\images\\button_stop.png",
-	"W:\\metronome\\data\\images\\bpm.png",
-	"W:\\metronome\\data\\images\\segment_horizontal.png",
-	"W:\\metronome\\data\\images\\segment_vertical.png",
-	"W:\\metronome\\data\\images\\segment_horizontal_mini.png",
-	"W:\\metronome\\data\\images\\segment_vertical_mini.png"
+	"..\\data\\images\\button_start.png",
+	"..\\data\\images\\button_stop.png",
+	"..\\data\\images\\bpm.png",
+	"..\\data\\images\\segment_horizontal.png",
+	"..\\data\\images\\segment_vertical.png",
+	"..\\data\\images\\segment_horizontal_mini.png",
+	"..\\data\\images\\segment_vertical_mini.png"
 };
 
 #define MIN_TEMPO				30
@@ -70,11 +70,11 @@ static const char* images[IMAGE_COUNT] = {
 
 #define SOUND_COUNT				2
 static const char* sounds[SOUND_COUNT] = {
-	"W:\\metronome\\data\\audio\\main.wav",
-	"W:\\metronome\\data\\audio\\secondary.wav"
+	"..\\data\\audio\\main.wav",
+	"..\\data\\audio\\secondary.wav"
 };
 
-static const char* icon_path = "W:\\metronome\\data\\images\\icon.ico";
+static const char* icon_path = "..\\data\\images\\icon.ico";
 
 #define TEMPO_CHANGE_STEP		5	
 #define METER_CHANGE_STEP		10	
