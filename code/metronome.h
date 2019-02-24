@@ -33,8 +33,8 @@ struct metronome_input {
 
 struct metronome_app {
 	digit bpm_digits[BPM_DIGIT_COUNT];
-	digit meter_count_digit;
-	digit meter_length_digit;
+	digit meter_count_digits[METER_DIGIT_COUNT];
+	digit meter_length_digits[METER_DIGIT_COUNT];
 	gui_image images[IMAGE_COUNT];
 	sound sounds[SOUND_COUNT];
 	sound main_sound;

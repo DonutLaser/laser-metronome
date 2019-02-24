@@ -23,17 +23,20 @@
 #define BPM_DIGIT_3_POSITION	150, 30
 #define BPM_DIGIT_2_POSITION	119, 30
 #define BPM_DIGIT_1_POSITION	87, 30
-#define METER_COUNT_POSITION	34, 13
-#define METER_LENGTH_POSITION 	34, 60
+#define COUNT_DIGIT_2_POSITION	43, 13
+#define COUNT_DIGIT_1_POSITION	19, 13 
+#define LENGTH_DIGIT_2_POSITION 43, 60
+#define LENGTH_DIGIT_1_POSITION	19, 60 
 
-#define METER_DIVIDER 			30, 53, 27, 2
+#define METER_DIVIDER 			30, 53, 37, 2
 
 #define ACTIVE_BPM_RECT 		87, 30, 89, 47
-#define ACTIVE_METER_COUNT_RECT	34, 13, 20, 35
-#define ACTIVE_METER_LEN_RECT	34, 60, 20, 35
+#define ACTIVE_METER_COUNT_RECT	34, 13, 29, 35
+#define ACTIVE_METER_LEN_RECT	34, 60, 29, 35
 
 #define DIGIT_SEGMENT_COUNT		7
 #define BPM_DIGIT_COUNT			3
+#define METER_DIGIT_COUNT 		2
 
 #define SEGMENT_A 				4, 0
 #define SEGMENT_B				19, 4
@@ -74,14 +77,14 @@ static const char* sounds[SOUND_COUNT] = {
 #define TEMPO_CHANGE_STEP		5	
 #define METER_CHANGE_STEP		10	
 
-#define METER_COUNT_VALUE_COUNT	8
+#define METER_COUNT_VALUE_COUNT	14
 static const unsigned count_values[METER_COUNT_VALUE_COUNT] = {
-	2, 3, 4, 5, 6, 7, 8, 9 // Only single digits for now
+	2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-#define METER_LEN_VALUE_COUNT	2
+#define METER_LEN_VALUE_COUNT	3
 static const unsigned length_values[METER_LEN_VALUE_COUNT] = {
-	4, 8 // Only single digits for now
+	4, 8, 16
 };
 
 #define START_COUNT				4

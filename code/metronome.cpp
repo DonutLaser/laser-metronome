@@ -73,6 +73,14 @@ static void update_digit_segments (int code, digit* result) {
 	}
 }
 
+static void update_number (unsigned number, unsigned count, digit digits[]) {
+	for (int i = count - 1; i >= 0; --i) {
+		unsigned d = number % 10;
+		update_digit_segments (digit_to_code (d), &(digits[i]));
+		number /= 10;
+	}
+}
+
 static void draw_digit (v2 origin, digit d, v4 color) {
 	for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
 		digit_segment segment = d.segments[j];
@@ -96,12 +104,7 @@ static void update_bpm (metronome_app* app, metronome_input input, gui_window wi
 
 		app -> drag_origin = input.mouse_pos;
 
-		unsigned tempo = app -> tempo;
-		for (int i = BPM_DIGIT_COUNT - 1; i >= 0; --i) {
-			unsigned digit = tempo % 10;
-			update_digit_segments (digit_to_code (digit), &app -> bpm_digits[i]);
-			tempo /= 10;	
-		}
+		update_number (app -> tempo, BPM_DIGIT_COUNT, app -> bpm_digits);
 	}
 }
 
@@ -137,17 +140,23 @@ static void update_meter_count (metronome_app* app, metronome_input input, gui_w
 
 		app -> drag_origin = input.mouse_pos;
 
-		update_digit_segments (digit_to_code (app -> count), &app -> meter_count_digit);
+		update_number (app -> count, METER_DIGIT_COUNT, app -> meter_count_digits);
 	}
 }
 
 static void draw_meter_count (metronome_app* app, metronome_input input) {
+	v2 positions[] = {
+		make_v2 (COUNT_DIGIT_1_POSITION),
+		make_v2 (COUNT_DIGIT_2_POSITION)
+	};
+
 	v4 color = make_color_white ();
 	rect r = make_rect (ACTIVE_METER_COUNT_RECT);
 	if (is_point_in_rect (r, input.mouse_pos) || app -> changing_value_type == CT_COUNT)
 		color = make_color (DIGIT_HOVER_COLOR);
 
-	draw_digit (make_v2 (METER_COUNT_POSITION), app -> meter_count_digit, color);
+	for (unsigned i = app -> count < 10 ? 1 : 0; i < METER_DIGIT_COUNT; ++i)
+		draw_digit (positions[i], app -> meter_count_digits[i], color);
 }
 
 static void update_meter_length (metronome_app* app, metronome_input input, gui_window window) {
@@ -164,17 +173,23 @@ static void update_meter_length (metronome_app* app, metronome_input input, gui_
 
 		app -> drag_origin = input.mouse_pos;
 
-		update_digit_segments (digit_to_code (app -> length), &app -> meter_length_digit);
+		update_number (app -> length, METER_DIGIT_COUNT, app -> meter_length_digits);
 	}
 }
 
 static void draw_meter_length (metronome_app* app, metronome_input input) {
+	v2 positions[] = {
+		make_v2 (LENGTH_DIGIT_1_POSITION),
+		make_v2 (LENGTH_DIGIT_2_POSITION)
+	};
+
 	v4 color = make_color_white ();
 	rect r = make_rect (ACTIVE_METER_LEN_RECT);
 	if (is_point_in_rect (r, input.mouse_pos) || app -> changing_value_type == CT_LENGTH)
 		color = make_color (DIGIT_HOVER_COLOR);
 
-	draw_digit (make_v2 (METER_LENGTH_POSITION), app -> meter_length_digit, color);
+	for (unsigned i = app -> length < 10 ? 1 : 0; i < METER_DIGIT_COUNT; ++i)
+		draw_digit (positions[i], app -> meter_length_digits[i], color);
 }
 
 static bool draw_button (metronome_app* app, metronome_input input) {
@@ -265,20 +280,14 @@ void metronome_init (void* memory, gui_window window) {
 		make_v2 (SEGMENT_MINI_G)
 	};
 
-	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
-		init_digit (app, mini_positions, images, &app -> meter_count_digit, I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
-		init_digit (app, mini_positions, images, &app -> meter_length_digit, I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
+	for (unsigned i = 0; i < METER_DIGIT_COUNT; ++i) {
+		init_digit (app, mini_positions, images, &app -> meter_count_digits[i], I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
+		init_digit (app, mini_positions, images, &app -> meter_length_digits[i], I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
 	}
 
-	unsigned tempo = app -> tempo;
-	for (int i = BPM_DIGIT_COUNT - 1; i >= 0; --i) {
-		unsigned digit = tempo % 10;
-		update_digit_segments (digit_to_code (digit), &app -> bpm_digits[i]);
-		tempo /= 10;	
-	}
-
-	update_digit_segments (digit_to_code (app -> count), &app -> meter_count_digit);
-	update_digit_segments (digit_to_code (app -> length), &app -> meter_length_digit);
+	update_number (app -> tempo, BPM_DIGIT_COUNT, app -> bpm_digits);
+	update_number (app -> count, METER_DIGIT_COUNT, app -> meter_count_digits);
+	update_number (app -> length, METER_DIGIT_COUNT, app -> meter_length_digits);
 
 	gl_init (window);
 	audio_init ();
