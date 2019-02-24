@@ -3,7 +3,7 @@
 
 #include "../third_party/gui_window.h"
 
-#if 1
+#if 0
 #define GUI_DEBUG
 #endif
 
@@ -15,6 +15,8 @@ GUI_MAIN {
 	gui_window window = wnd_create ("Laser Metronome", WINDOW_WIDTH, WINDOW_HEIGHT, false);
 	wnd_set_style (window, S_FIXEDSIZE);
 	window.bg_color = make_color (BG_COLOR);
+
+	wnd_set_icon (window, icon_path);
 
 	void* memory = malloc (1024 * 1024 * 3); // 3 MB
 

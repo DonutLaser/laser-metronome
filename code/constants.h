@@ -74,6 +74,8 @@ static const char* sounds[SOUND_COUNT] = {
 	"W:\\metronome\\data\\audio\\secondary.wav"
 };
 
+static const char* icon_path = "W:\\metronome\\data\\images\\icon.ico";
+
 #define TEMPO_CHANGE_STEP		5	
 #define METER_CHANGE_STEP		10	
 
