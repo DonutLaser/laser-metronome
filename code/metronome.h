@@ -31,6 +31,8 @@ struct metronome_input {
 
 struct metronome_app {
 	digit bpm_digits[BPM_DIGIT_COUNT];
+	digit meter_count_digit;
+	digit meter_length_digit;
 	gui_image images[IMAGE_COUNT];
 	sound sounds[SOUND_COUNT];
 	sound main_sound;
@@ -38,8 +40,12 @@ struct metronome_app {
 	v2 drag_origin;
 
 	unsigned tempo;
+	unsigned count; 
+	unsigned length;
 	bool playing;
 	bool changing_tempo;
+	bool changing_meter_count;
+	bool changing_meter_length;
 
 	unsigned click_count;
 	timer play_timer;

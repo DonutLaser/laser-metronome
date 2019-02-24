@@ -22,11 +22,14 @@
 #define BPM_DIGIT_3_POSITION	150, 30
 #define BPM_DIGIT_2_POSITION	119, 30
 #define BPM_DIGIT_1_POSITION	87, 30
-#define METER_COUNT_POSITION	30, 13
-#define METER_LENGTH_POSITION 	30, 60
+#define METER_COUNT_POSITION	34, 13
+#define METER_LENGTH_POSITION 	34, 60
 
 #define METER_DIVIDER 			30, 53, 27, 2
+
 #define ACTIVE_BPM_RECT 		87, 30, 89, 47
+#define ACTIVE_METER_COUNT_RECT	34, 13, 20, 35
+#define ACTIVE_METER_LEN_RECT	34, 60, 20, 35
 
 #define DIGIT_SEGMENT_COUNT		7
 #define BPM_DIGIT_COUNT			3
@@ -39,13 +42,23 @@
 #define SEGMENT_F 				0, 4
 #define SEGMENT_G 				4, 20
 
-#define IMAGE_COUNT				5
+#define SEGMENT_MINI_A			3, 0
+#define SEGMENT_MINI_B			15, 3 
+#define SEGMENT_MINI_C			15, 18
+#define SEGMENT_MINI_D			3, 30
+#define SEGMENT_MINI_E			0, 18 
+#define SEGMENT_MINI_F			0, 3 
+#define SEGMENT_MINI_G			3, 15 
+
+#define IMAGE_COUNT				7	
 static const char* images[IMAGE_COUNT] = { 
 	"W:\\metronome\\data\\images\\button_start.png",
 	"W:\\metronome\\data\\images\\button_stop.png",
 	"W:\\metronome\\data\\images\\bpm.png",
 	"W:\\metronome\\data\\images\\segment_horizontal.png",
-	"W:\\metronome\\data\\images\\segment_vertical.png"
+	"W:\\metronome\\data\\images\\segment_vertical.png",
+	"W:\\metronome\\data\\images\\segment_horizontal_mini.png",
+	"W:\\metronome\\data\\images\\segment_vertical_mini.png"
 };
 
 #define MIN_TEMPO				30
@@ -58,5 +71,10 @@ static const char* sounds[SOUND_COUNT] = {
 };
 
 #define TEMPO_CHANGE_STEP		5	
+
+#define METER_COUNT_VALUES		2, 3, 4, 5, 6, 7, 8, 9  // Single digits for now
+#define METER_LENGTH_VALUES		4, 8 // Single digits for now
+#define START_COUNT				4
+#define START_LENGTH			4
 
 #endif
