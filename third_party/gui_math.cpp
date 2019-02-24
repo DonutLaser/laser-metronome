@@ -64,6 +64,26 @@ v4 make_color (unsigned x, unsigned y, unsigned z, unsigned w) {
 	return { (float)x / 255, (float)y / 255, (float)z / 255, (float)w / 255 };
 }
 
+v4 make_color_white () {
+	return make_color (255, 255, 255, 255);
+}
+
+v4 make_color_black () {
+	return make_color (0, 0, 0, 255);
+}
+
+v4 make_color_red () {
+	return make_color (255, 0, 0, 255);
+}
+
+v4 make_color_green () {
+	return make_color (0, 255, 0, 255);
+}
+
+v4 make_color_blue () {
+	return make_color (0, 0, 255, 255);
+}
+
 m4 make_identity () {
 	m4 result = { };
 	for (unsigned i = 0; i < 4; ++i)

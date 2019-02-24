@@ -67,6 +67,11 @@ v4 make_v4 (v3 xyz, float w);
 v4 make_v4 (v2 xy, float z, float w);
 
 v4 make_color (unsigned x, unsigned y, unsigned z, unsigned w);
+v4 make_color_white ();
+v4 make_color_black ();
+v4 make_color_red ();
+v4 make_color_green ();
+v4 make_color_blue ();
 
 m4 make_identity ();
 m4 transpose (m4 matrix);

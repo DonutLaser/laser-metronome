@@ -16,7 +16,7 @@ static void play (metronome_app* app) {
 		timer_reset (&app -> play_timer);
 
 		++app -> click_count;
-		if (app -> click_count == 4)
+		if (app -> click_count == app -> count)
 			app -> click_count = 0;
 	}
 }
@@ -78,7 +78,7 @@ static void draw_digit (v2 origin, digit d) {
 		digit_segment segment = d.segments[j];
 		if (segment.on) {
 			rect r = make_rect (origin + segment.position, 0.0f, 0.0f);
-			gl_draw_image (r, make_color (255, 255, 255, 255), segment.image);
+			gl_draw_image (r, make_color_white (), segment.image);
 		}
 	}
 }
@@ -92,7 +92,7 @@ static void update_bpm (metronome_app* app, metronome_input input, gui_window wi
 	if (tempo_change != 0) {
 		app -> tempo += tempo_change;
 		app -> tempo = CLAMP (app -> tempo, MIN_TEMPO, MAX_TEMPO);
-		app -> play_timer.target_miliseconds = 60000 / app -> tempo;
+		app -> play_timer.target_miliseconds = 60000 / app -> tempo / (app -> length / 4);
 
 		app -> drag_origin = input.mouse_pos;
 
@@ -116,7 +116,7 @@ static void draw_bpm (metronome_app* app) {
 		draw_digit (positions[i], app -> bpm_digits[i]);
 
 	rect bpm_rect = make_rect (BPM_TEXT_POSITION, 0, 0);
-	gl_draw_image (bpm_rect, make_color (255, 255, 255, 255), app -> images[I_BPM]);
+	gl_draw_image (bpm_rect, make_color_white (), app -> images[I_BPM]);
 }
 
 static void update_meter_count (metronome_app* app, metronome_input input, gui_window window) {
@@ -150,6 +150,7 @@ static void update_meter_length (metronome_app* app, metronome_input input, gui_
 		app -> length_index += change < 0 ? -1 : 1;
 		app -> length_index = CLAMP (app -> length_index, 0, METER_LEN_VALUE_COUNT -1);
 		app -> length = length_values[app -> length_index];
+		app -> play_timer.target_miliseconds = 60000 / app -> tempo / (app -> length / 4);
 
 		app -> drag_origin = input.mouse_pos;
 
@@ -160,10 +161,6 @@ static void update_meter_length (metronome_app* app, metronome_input input, gui_
 static void draw_meter_length (metronome_app* app) {
 	draw_digit (make_v2 (METER_LENGTH_POSITION), app -> meter_length_digit);
 }
-
-// 	rect divider_rect = make_rect (METER_DIVIDER);
-// 	v4 color = make_color (ACCENT_COLOR);
-// 	gl_draw_rect (divider_rect, color);
 
 static bool draw_button (metronome_app* app, metronome_input input) {
 	bool result = false;
@@ -180,7 +177,7 @@ static bool draw_button (metronome_app* app, metronome_input input) {
 	}
 
 	gl_draw_rect (r, color);
-	gl_draw_image (image_rect, make_color (255, 255, 255, 255), 
+	gl_draw_image (image_rect, make_color_white (), 
 				   app -> playing ? app -> images[I_STOP] : app -> images[I_START]);
 
 	return result || input.space_down;
@@ -227,7 +224,7 @@ void metronome_init (void* memory, gui_window window) {
 	app -> length_index = 0;
 	app -> length = START_LENGTH;
 	app -> click_count = 0;
-	app -> play_timer.target_miliseconds = 60000 / app -> tempo;
+	app -> play_timer.target_miliseconds = 60000 / app -> tempo / (app -> length / 4);
 
 	bool images[] = { true, false, false, true, false, false, true }; // True - horizontal, false - vertical
 	v2 positions[] = { 
