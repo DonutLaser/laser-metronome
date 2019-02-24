@@ -73,12 +73,12 @@ static void update_digit_segments (int code, digit* result) {
 	}
 }
 
-static void draw_digit (v2 origin, digit d) {
+static void draw_digit (v2 origin, digit d, v4 color) {
 	for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
 		digit_segment segment = d.segments[j];
 		if (segment.on) {
 			rect r = make_rect (origin + segment.position, 0.0f, 0.0f);
-			gl_draw_image (r, make_color_white (), segment.image);
+			gl_draw_image (r, color, segment.image);
 		}
 	}
 }
@@ -105,15 +105,20 @@ static void update_bpm (metronome_app* app, metronome_input input, gui_window wi
 	}
 }
 
-static void draw_bpm (metronome_app* app) {
+static void draw_bpm (metronome_app* app, metronome_input input) {
 	v2 positions[] = { 
 		make_v2 (BPM_DIGIT_1_POSITION),
 		make_v2 (BPM_DIGIT_2_POSITION),
 		make_v2 (BPM_DIGIT_3_POSITION)
 	};
 
+	v4 color = make_color_white ();
+	rect r = make_rect (ACTIVE_BPM_RECT);
+	if (is_point_in_rect (r, input.mouse_pos) || app -> changing_value_type == CT_BPM)
+		color = make_color (DIGIT_HOVER_COLOR);	
+
 	for (unsigned i = app -> tempo < 100 ? 1 : 0; i < BPM_DIGIT_COUNT; ++i)
-		draw_digit (positions[i], app -> bpm_digits[i]);
+		draw_digit (positions[i], app -> bpm_digits[i], color);
 
 	rect bpm_rect = make_rect (BPM_TEXT_POSITION, 0, 0);
 	gl_draw_image (bpm_rect, make_color_white (), app -> images[I_BPM]);
@@ -136,8 +141,13 @@ static void update_meter_count (metronome_app* app, metronome_input input, gui_w
 	}
 }
 
-static void draw_meter_count (metronome_app* app) {
-	draw_digit (make_v2 (METER_COUNT_POSITION), app -> meter_count_digit);
+static void draw_meter_count (metronome_app* app, metronome_input input) {
+	v4 color = make_color_white ();
+	rect r = make_rect (ACTIVE_METER_COUNT_RECT);
+	if (is_point_in_rect (r, input.mouse_pos) || app -> changing_value_type == CT_COUNT)
+		color = make_color (DIGIT_HOVER_COLOR);
+
+	draw_digit (make_v2 (METER_COUNT_POSITION), app -> meter_count_digit, color);
 }
 
 static void update_meter_length (metronome_app* app, metronome_input input, gui_window window) {
@@ -158,8 +168,13 @@ static void update_meter_length (metronome_app* app, metronome_input input, gui_
 	}
 }
 
-static void draw_meter_length (metronome_app* app) {
-	draw_digit (make_v2 (METER_LENGTH_POSITION), app -> meter_length_digit);
+static void draw_meter_length (metronome_app* app, metronome_input input) {
+	v4 color = make_color_white ();
+	rect r = make_rect (ACTIVE_METER_LEN_RECT);
+	if (is_point_in_rect (r, input.mouse_pos) || app -> changing_value_type == CT_LENGTH)
+		color = make_color (DIGIT_HOVER_COLOR);
+
+	draw_digit (make_v2 (METER_LENGTH_POSITION), app -> meter_length_digit, color);
 }
 
 static bool draw_button (metronome_app* app, metronome_input input) {
@@ -278,18 +293,17 @@ void metronome_update (void* memory, metronome_input input, gui_window window) {
 	handle_input (app, input, window);
 
 	update_meter_count (app, input, window);
-	draw_meter_count (app);
+	draw_meter_count (app, input);
 
-	// Here for now
 	rect divider_rect = make_rect (METER_DIVIDER);
 	v4 color = make_color (ACCENT_COLOR);
 	gl_draw_rect (divider_rect, color);
 
 	update_meter_length (app, input, window);
-	draw_meter_length (app);
+	draw_meter_length (app, input);
 
 	update_bpm (app, input, window);
-	draw_bpm (app);
+	draw_bpm (app, input);
 
 	if (draw_button (app, input)) {
 		app -> playing = !app -> playing;
