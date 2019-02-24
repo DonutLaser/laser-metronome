@@ -8,6 +8,8 @@
 #include "../third_party/gui_resources.h"
 #include "../third_party/gui_time.h"
 
+enum change_type { CT_BPM, CT_COUNT, CT_LENGTH, CT_NONE };
+
 struct gui_window;
 
 struct digit_segment {
@@ -40,12 +42,14 @@ struct metronome_app {
 	v2 drag_origin;
 
 	unsigned tempo;
+
+	int count_index;
 	unsigned count; 
+	int length_index;
 	unsigned length;
+	change_type changing_value_type;
+
 	bool playing;
-	bool changing_tempo;
-	bool changing_meter_count;
-	bool changing_meter_length;
 
 	unsigned click_count;
 	timer play_timer;

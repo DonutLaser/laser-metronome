@@ -3,7 +3,7 @@
 
 #include "../third_party/gui_window.h"
 
-#if 0
+#if 1
 #define GUI_DEBUG
 #endif
 

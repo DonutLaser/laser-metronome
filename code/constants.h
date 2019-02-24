@@ -71,9 +71,18 @@ static const char* sounds[SOUND_COUNT] = {
 };
 
 #define TEMPO_CHANGE_STEP		5	
+#define METER_CHANGE_STEP		10	
 
-#define METER_COUNT_VALUES		2, 3, 4, 5, 6, 7, 8, 9  // Single digits for now
-#define METER_LENGTH_VALUES		4, 8 // Single digits for now
+#define METER_COUNT_VALUE_COUNT	8
+static const unsigned count_values[METER_COUNT_VALUE_COUNT] = {
+	2, 3, 4, 5, 6, 7, 8, 9 // Only single digits for now
+};
+
+#define METER_LEN_VALUE_COUNT	2
+static const unsigned length_values[METER_LEN_VALUE_COUNT] = {
+	4, 8 // Only single digits for now
+};
+
 #define START_COUNT				4
 #define START_LENGTH			4
 

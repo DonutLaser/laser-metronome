@@ -39,6 +39,33 @@ static int digit_to_code (unsigned digit) {
 	}
 }
 
+static void handle_input (metronome_app* app, metronome_input input, gui_window window) {
+	if (app -> changing_value_type != CT_NONE) {
+		if (input.lmb_up) {
+			app -> changing_value_type = CT_NONE; 
+			wnd_uncapture_cursor ();
+		}
+
+		return;
+	}
+
+	rect bpm_rect = make_rect (ACTIVE_BPM_RECT);
+	rect count_rect = make_rect (ACTIVE_METER_COUNT_RECT);
+	rect length_rect = make_rect (ACTIVE_METER_LEN_RECT);
+
+	if (is_point_in_rect (bpm_rect, input.mouse_pos) && input.lmb_down)
+		app -> changing_value_type = CT_BPM;
+	else if (is_point_in_rect (count_rect, input.mouse_pos) && input.lmb_down)
+		app -> changing_value_type = CT_COUNT;
+	else if (is_point_in_rect (length_rect, input.mouse_pos) && input.lmb_down)
+		app -> changing_value_type = CT_LENGTH;
+
+	if (app -> changing_value_type != CT_NONE) {
+		app -> drag_origin = input.mouse_pos;
+		wnd_capture_cursor (window);
+	}
+}
+
 static void update_digit_segments (int code, digit* result) {
 	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
 		result -> segments[i].on = code & 1;
@@ -46,92 +73,97 @@ static void update_digit_segments (int code, digit* result) {
 	}
 }
 
-static void draw_bpm (metronome_app* app, metronome_input input, gui_window window) {
-	if (app -> changing_tempo) {
-		int tempo_change = (int)(input.mouse_pos.x - app -> drag_origin.x) / TEMPO_CHANGE_STEP;
-		app -> tempo += tempo_change;
+static void draw_digit (v2 origin, digit d) {
+	for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
+		digit_segment segment = d.segments[j];
+		if (segment.on) {
+			rect r = make_rect (origin + segment.position, 0.0f, 0.0f);
+			gl_draw_image (r, make_color (255, 255, 255, 255), segment.image);
+		}
+	}
+}
 
+static void update_bpm (metronome_app* app, metronome_input input, gui_window window) {
+	if (app -> changing_value_type != CT_BPM)
+		return;
+
+	int tempo_change = (int)(input.mouse_pos.x - app -> drag_origin.x) / TEMPO_CHANGE_STEP;
+
+	if (tempo_change != 0) {
+		app -> tempo += tempo_change;
 		app -> tempo = CLAMP (app -> tempo, MIN_TEMPO, MAX_TEMPO);
 		app -> play_timer.target_miliseconds = 60000 / app -> tempo;
 
-		if (tempo_change != 0)
-			app -> drag_origin = input.mouse_pos;
-	}
+		app -> drag_origin = input.mouse_pos;
 
-	rect whole_rect = make_rect (ACTIVE_BPM_RECT);
-	if (is_point_in_rect (whole_rect, input.mouse_pos)) {
-		if (input.lmb_down) {
-			app -> changing_tempo = true;
-			app -> drag_origin = input.mouse_pos;
-			wnd_capture_cursor (window);
+		unsigned tempo = app -> tempo;
+		for (int i = BPM_DIGIT_COUNT - 1; i >= 0; --i) {
+			unsigned digit = tempo % 10;
+			update_digit_segments (digit_to_code (digit), &app -> bpm_digits[i]);
+			tempo /= 10;	
 		}
 	}
+}
 
+static void draw_bpm (metronome_app* app) {
 	v2 positions[] = { 
 		make_v2 (BPM_DIGIT_1_POSITION),
 		make_v2 (BPM_DIGIT_2_POSITION),
 		make_v2 (BPM_DIGIT_3_POSITION)
 	};
 
-	unsigned tempo = app -> tempo;
-	for (int i = BPM_DIGIT_COUNT - 1; i >= 0; --i) {
-		unsigned digit = tempo % 10;
-		update_digit_segments (digit_to_code (digit), &app -> bpm_digits[i]);
-		tempo /= 10;	
-	}
-
-	v4 white_color = make_color (255, 255, 255, 255);
-	for (unsigned i = app -> tempo < 100 ? 1 : 0; i < BPM_DIGIT_COUNT; ++i) {
-		for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
-			digit_segment segment = app -> bpm_digits[i].segments[j];
-			if (segment.on) {
-				rect r = make_rect (positions[i] + segment.position, 0.0f, 0.0f);
-				gl_draw_image (r, white_color, segment.image);
-			}
-		}
-	}
+	for (unsigned i = app -> tempo < 100 ? 1 : 0; i < BPM_DIGIT_COUNT; ++i)
+		draw_digit (positions[i], app -> bpm_digits[i]);
 
 	rect bpm_rect = make_rect (BPM_TEXT_POSITION, 0, 0);
 	gl_draw_image (bpm_rect, make_color (255, 255, 255, 255), app -> images[I_BPM]);
 }
 
-static void draw_meter (metronome_app* app, metronome_input input, gui_window window) {
-	rect count_rect = make_rect (ACTIVE_METER_COUNT_RECT);
-	if (is_point_in_rect (count_rect, input.mouse_pos)) {
-		if (input.lmb_down) {
-			app -> changing_meter_count = true;
-			app -> drag_origin = input.mouse_pos;
-			wnd_capture_cursor (window);
-		}
+static void update_meter_count (metronome_app* app, metronome_input input, gui_window window) {
+	if (app -> changing_value_type != CT_COUNT)	
+		return;
+
+	int change = (int)(input.mouse_pos.x - app -> drag_origin.x) / METER_CHANGE_STEP;
+
+	if (change != 0) {
+		app -> count_index += change < 0 ? -1 : 1;
+		app -> count_index = CLAMP (app -> count_index, 0, METER_COUNT_VALUE_COUNT - 1);
+		app -> count = count_values[app -> count_index];
+
+		app -> drag_origin = input.mouse_pos;
+
+		update_digit_segments (digit_to_code (app -> count), &app -> meter_count_digit);
 	}
-
-	v2 count_position = make_v2 (METER_COUNT_POSITION);
-	v2 length_position = make_v2 (METER_LENGTH_POSITION);
-
-	update_digit_segments (digit_to_code (app -> count), &app -> meter_count_digit);
-	update_digit_segments (digit_to_code (app -> length), &app -> meter_length_digit);
-
-	v4 white_color = make_color (255, 255, 255, 255);
-	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
-		digit_segment segment = app -> meter_count_digit.segments[i];
-		if (segment.on) {
-			rect r = make_rect (count_position + segment.position, 0.0f, 0.0f);
-			gl_draw_image (r, white_color, segment.image);
-		}
-	}
-
-	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
-		digit_segment segment = app -> meter_length_digit.segments[i];
-		if (segment.on) {
-			rect r = make_rect (length_position + segment.position, 0.0f, 0.0f);
-			gl_draw_image (r, white_color, segment.image);
-		}
-	}
-
-	rect divider_rect = make_rect (METER_DIVIDER);
-	v4 color = make_color (ACCENT_COLOR);
-	gl_draw_rect (divider_rect, color);
 }
+
+static void draw_meter_count (metronome_app* app) {
+	draw_digit (make_v2 (METER_COUNT_POSITION), app -> meter_count_digit);
+}
+
+static void update_meter_length (metronome_app* app, metronome_input input, gui_window window) {
+	if (app -> changing_value_type != CT_LENGTH)
+		return;
+
+	int change = (int)(input.mouse_pos.x - app -> drag_origin.x) / METER_CHANGE_STEP;
+
+	if (change != 0) {
+		app -> length_index += change < 0 ? -1 : 1;
+		app -> length_index = CLAMP (app -> length_index, 0, METER_LEN_VALUE_COUNT -1);
+		app -> length = length_values[app -> length_index];
+
+		app -> drag_origin = input.mouse_pos;
+
+		update_digit_segments (digit_to_code (app -> length), &app -> meter_length_digit);
+	}
+}
+
+static void draw_meter_length (metronome_app* app) {
+	draw_digit (make_v2 (METER_LENGTH_POSITION), app -> meter_length_digit);
+}
+
+// 	rect divider_rect = make_rect (METER_DIVIDER);
+// 	v4 color = make_color (ACCENT_COLOR);
+// 	gl_draw_rect (divider_rect, color);
 
 static bool draw_button (metronome_app* app, metronome_input input) {
 	bool result = false;
@@ -142,7 +174,7 @@ static bool draw_button (metronome_app* app, metronome_input input) {
 	if (is_point_in_rect (r, input.mouse_pos)) {
 		color = make_color (BUTTON_HOVER_COLOR);
 
-		result = input.lmb_up && !app -> changing_tempo;
+		result = input.lmb_up && app -> changing_value_type == CT_NONE;
 		if (input.lmb_pressed)
 			image_rect.y += 2;
 	}
@@ -168,6 +200,15 @@ static void draw_app_border () {
 	gl_draw_rect (l, color);
 }
 
+static void init_digit (metronome_app* app, v2 positions[], bool images[], digit* d, image hor_type, image ver_type) {
+	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
+		digit_segment* segment = &d -> segments[i];
+		segment -> image = images[i] ? app -> images[hor_type] : app -> images[ver_type];
+		segment -> position = positions[i];
+		segment -> on = false;	
+	}
+}
+
 void metronome_init (void* memory, gui_window window) {
 	metronome_app* app = (metronome_app*)memory;
 
@@ -177,6 +218,16 @@ void metronome_init (void* memory, gui_window window) {
 
 		gl_load_image (&app -> images[i]);
 	}
+
+	app -> playing = false;
+	app -> changing_value_type = CT_NONE; 
+	app -> tempo = 120;
+	app -> count_index = 2;
+	app -> count = START_COUNT;
+	app -> length_index = 0;
+	app -> length = START_LENGTH;
+	app -> click_count = 0;
+	app -> play_timer.target_miliseconds = 60000 / app -> tempo;
 
 	bool images[] = { true, false, false, true, false, false, true }; // True - horizontal, false - vertical
 	v2 positions[] = { 
@@ -189,14 +240,8 @@ void metronome_init (void* memory, gui_window window) {
 		make_v2 (SEGMENT_G)
 	};
 
-	for (unsigned i = 0; i < BPM_DIGIT_COUNT; ++i) {
-		for (unsigned j = 0; j < DIGIT_SEGMENT_COUNT; ++j) {
-			digit_segment* segment = &app -> bpm_digits[i].segments[j];
-			segment -> image = images[j] ? app -> images[I_SEGMENT_HOR] : app -> images[I_SEGMENT_VER];
-			segment -> position = positions[j];
-			segment -> on = false;	
-		}
-	}
+	for (unsigned i = 0; i < BPM_DIGIT_COUNT; ++i)
+		init_digit (app, positions, images, &app -> bpm_digits[i], I_SEGMENT_HOR, I_SEGMENT_VER);
 
 	v2 mini_positions[] = { 
 		make_v2 (SEGMENT_MINI_A),
@@ -209,28 +254,21 @@ void metronome_init (void* memory, gui_window window) {
 	};
 
 	for (unsigned i = 0; i < DIGIT_SEGMENT_COUNT; ++i) {
-		digit_segment* count_segment = &app -> meter_count_digit.segments[i];
-		digit_segment* length_segment = &app -> meter_length_digit.segments[i];
-		count_segment -> image = images[i] ? app -> images[I_SEGMENT_HOR_MINI] : app -> images[I_SEGMENT_VER_MINI];
-		length_segment -> image = images[i] ? app -> images[I_SEGMENT_HOR_MINI] : app -> images[I_SEGMENT_VER_MINI];
-		count_segment -> position = mini_positions[i];
-		length_segment -> position = mini_positions[i];
-		count_segment -> on = false;
-		length_segment -> on = false;
+		init_digit (app, mini_positions, images, &app -> meter_count_digit, I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
+		init_digit (app, mini_positions, images, &app -> meter_length_digit, I_SEGMENT_HOR_MINI, I_SEGMENT_VER_MINI);
 	}
 
-	app -> playing = false;
-	app -> changing_tempo = false;
-	app -> tempo = 120;
-	app -> count = START_COUNT;
-	app -> length = START_LENGTH;
+	unsigned tempo = app -> tempo;
+	for (int i = BPM_DIGIT_COUNT - 1; i >= 0; --i) {
+		unsigned digit = tempo % 10;
+		update_digit_segments (digit_to_code (digit), &app -> bpm_digits[i]);
+		tempo /= 10;	
+	}
 
-	// For now assume the meter is 4/4
-	app -> click_count = 0;
-	app -> play_timer.target_miliseconds = 60000 / app -> tempo;
+	update_digit_segments (digit_to_code (app -> count), &app -> meter_count_digit);
+	update_digit_segments (digit_to_code (app -> length), &app -> meter_length_digit);
 
 	gl_init (window);
-
 	audio_init ();
 
 	for (unsigned i = 0; i < SOUND_COUNT; ++i)
@@ -240,13 +278,16 @@ void metronome_init (void* memory, gui_window window) {
 void metronome_update (void* memory, metronome_input input, gui_window window) {
 	metronome_app* app = (metronome_app*)memory;
 
-	if (app -> changing_tempo && input.lmb_up) {
-		app -> changing_tempo = false;
-		wnd_uncapture_cursor ();
-	}
+	handle_input (app, input, window);
 
-	draw_meter (app, input, window);
-	draw_bpm (app, input, window);
+	update_meter_count (app, input, window);
+	draw_meter_count (app);
+
+	update_meter_length (app, input, window);
+	draw_meter_length (app);
+
+	update_bpm (app, input, window);
+	draw_bpm (app);
 
 	if (draw_button (app, input)) {
 		app -> playing = !app -> playing;
